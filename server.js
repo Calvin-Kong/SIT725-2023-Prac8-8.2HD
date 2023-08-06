@@ -1,41 +1,65 @@
 var express = require("express");
 var app = express();
+const { MongoClient, ServerApiVersion } = require("mongodb");
+const uri = "mongodb+srv://Night:SIT725_2023@cluster0.vj8ihdh.mongodb.net/?retryWrites=true&w=majority";
+var port = process.env.port || 3000;
+let collection;
 
-const cardList = [
-    {
-        title: "Golden Retriever",
-        path: "../views/images/dog1.png",
-        link: "https://www.akc.org/dog-breeds/golden-retriever/",
-        description: "The Golden Retriever, an exuberant Scottish gundog of great beauty, stands among America's most popular dog breeds..."
-    },
-    {
-        title: "Border Collie",
-        path: "/views/images/dog2.png",
-        link: "https://www.akc.org/dog-breeds/border-collie/",
-        description: "The Border Collie is an amazing dog maybe a bit too amazing for owners without the time, energy, or means to keep it occupied...."
-    },
-    {
-        title: "Siberian Husky",
-        path: "/views/images/dog3.png",
-        link: "https://www.akc.org/dog-breeds/siberian-husky/",
-        description: "Siberian Husky, a thickly coated, compact sled dog of medium size and great endurance, was developed to work in packs, pulling light loads at moderate speeds over vast frozen expanses...."
-    },
-    {
-        title: "Alaskan Malamute",
-        path: "/views/images/dog4.png",
-        link: "https://www.akc.org/dog-breeds/alaskan-malamute/",
-        description: "The Alaskan Malamute is an affectionate, loyal, and playful but dignified dog..."
-    }
-];
+app.use(express.static(__dirname + "/"));
+app.use(express.json());
+app.use(express.urlencoded({extended: false}));
 
-app.set('view engine', 'ejs');
-app.use(express.static(__dirname + '/'));
+async function run() {
+  try {
+    // Connect the client to the server	(optional starting in v4.7)
+    await client.connect();
+    collection = client.db().collection("Dogs");
+    console.log(collection);
+  } catch (ex) {
+    console.error(ex);
+  }
+}
 
-app.get('/', function(req, res) {
-    res.render('pages/index',{dogs:cardList});
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  },
 });
 
-var port = process.env.port || 3000;
+
+app.get("/", function (req, res) {
+  res.render("../views/pages/index.ejs");
+});
+
+app.post("/api/dog", (req, res) => {
+  let dog = req.body;
+  postDog(dog, (err, result) => {
+    if (!err) {
+      res.json({ statusCode: 201, data: result, message: "success" });
+    }
+  });
+});
+
+function postDog(dog, callback) {
+  collection.insertOne(dog, callback);
+}
+
+app.get("/api/dogs", (req, res) => {
+  getAllDogs((err, result) => {
+    if (!err) {
+      res.json({ statusCode: 200, data: result, message: "success" });
+    }
+  });
+});
+
+function getAllDogs(callback) {
+  collection.find({}).toArray(callback);
+}
+
 app.listen(port, () => {
-    console.log("App listening to: " + port);
+  console.log("App listening to: " + port);
+  run();
 });
