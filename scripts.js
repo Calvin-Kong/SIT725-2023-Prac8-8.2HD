@@ -37,10 +37,10 @@ function postDog(dog){
 }
 
 function getAlldogs(){
-    $.get('/api/dogs', (response)=>{
+    $.get('/api/dog', (response)=>{
         // response's data is in array format, so we can use it
         if (response.statusCode === 200) {
-            addCards(response);
+            addCards(response.data);
         }
     });
 }

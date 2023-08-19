@@ -8,6 +8,7 @@
 .click-me-button {
     background-color: #002bec;
     margin-top: 50px;
+    margin-bottom: 50px;
 }
 
 /* Bg Video / Main */
@@ -15,6 +16,7 @@
     color: rgb(26, 26, 26);
     font-weight: 600;
     height: calc(100vh - 64px);
+    display: contents;
 }
 
 #bg-video {
@@ -68,7 +70,7 @@ i.right {
 #card-section a {
     color: black;
 }
-
+/* Btn text change to white when hover */
 #card-section a:hover {
-    color: blue;
+    color: white;
 }
