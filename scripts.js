@@ -53,3 +53,8 @@ $(document).ready(function(){
     $('.modal').modal();
     getAlldogs();
 });
+
+const socket = io();
+socket.on('number', (msg) => {
+    console.log('Random Number: ' + msg);
+});
